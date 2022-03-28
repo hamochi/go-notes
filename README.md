@@ -1,2 +1,4 @@
-# go-notes
-Best practice, patterns etc for go
+# Go Notes
+
+### Table of content
+- [MySQL](www.something.com)
