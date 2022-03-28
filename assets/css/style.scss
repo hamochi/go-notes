@@ -4,4 +4,13 @@
 @import "{{ site.theme }}";
 .wrapper {
   width: 1200px;
+  section {
+    width: 900px;
+  }
+}
+.table_of_content {
+  list-style: none;
+  li {
+    list-style: none;
+  }
 }
