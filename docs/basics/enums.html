@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
+    <link href="../style.css" rel="stylesheet">
+    <title>Enums - Go notes</title>
+</head>
+<body>
+<div class="container">
+    <div class="left">
+        <div class="menu">
+            <div class="title"><a href="../">Go Notes</a></div>
+            <ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li></ul></li><li>database<ul><li><a href="../database/mysql.html">mysql</a></li></ul></li><li>standard_library<ul><li>http<ul><li><a href="../standard_library/http/client.html">client</a></li></ul></li><li>io<ul><li><a href="../standard_library/io/reader.html">reader</a></li></ul></li></ul></li></ul>
+        </div>
+    </div>
+    <div class="content">
+        <h1>Enums</h1>
+
+<p>There are no enumns types in Go, but we can use constants and variables to get something similar. A good way to insure the type safety of enums is to define them as their own types.
+This way if you have Month = 12 and Bananas = 12, then Month == Bananas will be false.
+It&rsquo;s also useful to create a String() method for that type so packages like fmt and log
+can print out the textual values of the enum.</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">enums</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Month</span> <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">const</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">January</span> <span class="nx">Month</span> <span class="p">=</span> <span class="kc">iota</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">February</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">March</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">May</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">June</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">July</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">August</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">September</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">October</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">November</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">December</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">m</span> <span class="nx">Month</span><span class="p">)</span> <span class="nf">String</span><span class="p">(</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">switch</span> <span class="nx">m</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">January</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;january&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">February</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;february&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">March</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;march&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">May</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;may&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">June</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;june&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">July</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;july&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">August</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;august&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">September</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;september&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">October</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;october&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">November</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;november&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">December</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;december&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="s">&#34;unknown&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">MyBirthMonth</span><span class="p">(</span><span class="p">)</span> <span class="nx">Month</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">December</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre><pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">enums</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;testing&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestMyBirthMonth</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">bMonth</span> <span class="o">:=</span> <span class="nf">MyBirthMonth</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">bMonth</span> <span class="o">!=</span> <span class="nx">December</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">t</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;unexpected month&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">const</span> <span class="nx">Bananas</span> <span class="p">=</span> <span class="mi">12</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">bMonth</span> <span class="o">==</span> <span class="nx">Bananas</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">t</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;type missmatch&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">bMonth</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Output:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl">december
+</span></span></code></pre>
+<h2>Using variables and structs</h2>
+
+<p>In this examples we create a type called Color that is a Struct and another type called NamedColor based on Color.
+We then create our enumns based on NamedColor.</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">enums</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Color</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Red</span>   <span class="kt">uint8</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Green</span> <span class="kt">uint8</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Blue</span>  <span class="kt">uint8</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">NamedColor</span> <span class="nx">Color</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="nx">NamedColor</span><span class="p">)</span> <span class="nf">String</span><span class="p">(</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">switch</span> <span class="nx">n</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">Yellow</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;yellow&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">Cyan</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;cyan&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">Magenta</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;magenta&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="k">case</span> <span class="nx">Silver</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;silver&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="s">&#34;unknown color&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Yellow</span>  <span class="p">=</span> <span class="nx">NamedColor</span><span class="p">{</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Cyan</span>    <span class="p">=</span> <span class="nx">NamedColor</span><span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Magenta</span> <span class="p">=</span> <span class="nx">NamedColor</span><span class="p">{</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Silver</span>  <span class="p">=</span> <span class="nx">NamedColor</span><span class="p">{</span><span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">192</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">ReturnMagenta</span><span class="p">(</span><span class="p">)</span> <span class="nx">NamedColor</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">Magenta</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Here we can also see that we can type cast NamedColor back to Color to check equality.</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">enums</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;testing&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestReturnMagenta</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">myColor</span> <span class="o">:=</span> <span class="nf">ReturnMagenta</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">myColor</span> <span class="o">!=</span> <span class="nx">Magenta</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">t</span><span class="p">.</span><span class="nf">Fatal</span><span class="p">(</span><span class="s">&#34;Unexpected color&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">newColor</span> <span class="o">:=</span> <span class="nx">Color</span><span class="p">{</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nf">Color</span><span class="p">(</span><span class="nx">Magenta</span><span class="p">)</span> <span class="o">!=</span> <span class="nx">newColor</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">t</span><span class="p">.</span><span class="nf">Fatalf</span><span class="p">(</span><span class="s">&#34;Our newColor is not magenta, newColor: %v, Magenta: %v&#34;</span><span class="p">,</span> <span class="nx">newColor</span><span class="p">,</span> <span class="nf">Color</span><span class="p">(</span><span class="nx">Magenta</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">myColor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>output:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl">magenta
+</span></span></code></pre>
+    </div>
+    <div class="right">
+        <div class="infobox">
+    <img src="https://avatars1.githubusercontent.com/u/196192?v=4">
+    <div class="author">Hamid Abouei</div>
+    <div class="title">Developer</div>
+
+    <div class="block">
+        <label>Created at</label>
+        <div class="date">2022-04-28</div>
+    </div>
+
+    <div class="block">
+        <label>Updated at</label>
+        <div class="date">2022-04-29</div>
+    </div>
+
+    <div class="block">
+        <label>Connect</label>
+        <div class="socialmedia"><a href="www.twitter.com/hamochis">@github</a></div>
+        <div class="socialmedia"><a href="www.linkedin.com/hamidabouei">@linkedIn</a></div>
+    </div>
+
+    <div class="block">
+        <label>Feedback</label>
+        <div class="socialmedia"><a href="mailto:hamochi@gmail.com">@email</a></div>
+    </div>
+</div>
+    </div>
+</div>
+</body>
+</html>

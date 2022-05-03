@@ -1,3 +1,4 @@
+
 # MySQL
 - Use Query() for SELECT statements, and always handle the returned rows and iterate over them.
 - Use Exec() for INSERT, DELETE, UPDATE and other statements that does not return rows.
@@ -8,18 +9,26 @@
 ## Connection
 Make sure to import mysql driver with _.
 ```go
-package main
+package mysql
 
 import (
+	"context"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"time"
 )
 
-func main() {
+type Person struct {
+	Id   int
+	Name string
+	Age  int
+}
+
+func Connect() (*sql.DB, error) {
 	// Create DB connection. sql.DB is not an open connection!
 	db, err := sql.Open("mysql", "username:password@tcp(0.0.0.0:3306)/database?parseTime=true")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	defer db.Close()
@@ -34,24 +43,27 @@ func main() {
 	// with a 5 seconds timeout limit
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	err = db.PingContext(ctx)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// Good to go, now is a good time to pass db object to other functions
 	// or store it in a settings struct
+	return db, nil
 }
 ```
 
 ## Select many rows
 ```go
-type Person struct {
-	Id   int
-	Name string
-	Age  int
-}
+package mysql
+
+import (
+	"context"
+	"database/sql"
+	"time"
+)
 
 func ReturnPeople(db *sql.DB, name string) ([]Person, error) {
 	// We set 5 second timeout on our query
@@ -89,11 +101,14 @@ func ReturnPeople(db *sql.DB, name string) ([]Person, error) {
 
 ## Select single row
 ```go
-type Person struct {
-	Id   int
-	Name string
-	Age  int
-}
+package mysql
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"time"
+)
 
 func ReturnPerson(db *sql.DB, id int) (Person, error) {
 	// We set 5 second timeout on our query
@@ -106,16 +121,28 @@ func ReturnPerson(db *sql.DB, id int) (Person, error) {
 
 	err := row.Scan(&p.Id, &p.Name, &p.Age)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return Person{}, fmt.Errorf("person with id %d not found", id)
+		}
 		return Person{}, err
 	}
 
 	return p, nil
 }
 ```
+
 ## Insert
 When inserting we can optionally get affected rows and last inserted id. Notice that
 ExecContext(ctx, query, params) does statement prepare under the hood.
 ```go
+package mysql
+
+import (
+	"context"
+	"database/sql"
+	"time"
+)
+
 func AddPerson(db *sql.DB, name string, age int) (int64, int64, error) {
 	// We set 5 second timeout on our query
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -140,13 +167,16 @@ func AddPerson(db *sql.DB, name string, age int) (int64, int64, error) {
 	return rowsAffected, lastId, nil
 }
 ```
+
 ## Update
 ```go
-type Person struct {
-	Id   int
-	Name string
-	Age  int
-}
+package mysql
+
+import (
+	"context"
+	"database/sql"
+	"time"
+)
 
 func UpdatePerson(db *sql.DB, p Person) (int64, error) {
 	// We set 5 second timeout on our query
@@ -167,8 +197,17 @@ func UpdatePerson(db *sql.DB, p Person) (int64, error) {
 	return rowsAffected, nil
 }
 ```
+
 ## Delete
 ```go
+package mysql
+
+import (
+	"context"
+	"database/sql"
+	"time"
+)
+
 func DeletePerson(db *sql.DB, id int) (int64, error) {
 	// We set 5 second timeout on our query
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -190,12 +229,15 @@ func DeletePerson(db *sql.DB, id int) (int64, error) {
 ```
 
 ## Prepare
+Prepare statements are useful when you want to prepare the data once and execute many times, for example inserting many rows in table.
 ```go
-type Person struct {
-    Id   int
-    Name string
-    Age  int
-}
+package mysql
+
+import (
+	"context"
+	"database/sql"
+	"time"
+)
 
 func Add(db *sql.DB, people ...Person) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -217,13 +259,17 @@ func Add(db *sql.DB, people ...Person) error {
 	return nil
 }
 ```
+
 ## Transactions
+Transactions are very useful when you need to do many database operations (for example creating entries in different tables) and have the possibility to roll back in case one of the operations failed.
 ```go
-type Person struct {
-	Id   int
-	Name string
-	Age  int
-}
+package mysql
+
+import (
+	"context"
+	"database/sql"
+	"time"
+)
 
 func NewUser(db *sql.DB, p Person, email string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -234,7 +280,7 @@ func NewUser(db *sql.DB, p Person, email string) error {
 		return err
 	}
 
-	// if we return early due to error, we make sure to roll back everything
+	// If we return early due to error, we make sure to roll back everything
 	defer tx.Rollback()
 
 	firstQuery := "INSERT INTO users(name, age) VALUES(?,?)"
@@ -254,7 +300,7 @@ func NewUser(db *sql.DB, p Person, email string) error {
 	if err == nil {
 		return err
 	}
-	
+
 	err = tx.Commit()
 	if err != nil {
 		return err

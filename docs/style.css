@@ -1,0 +1,437 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+.container {
+    display: flex;
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 0 10px;
+}
+
+
+@media screen and (max-width: 950px) {
+    .container .left .menu{
+        display: none;
+    }
+}
+
+.container .left {
+    padding-top: 40px;
+    width: 200px;
+    line-height: 25px;
+    font-size: 14px;
+}
+.container .left .menu {
+    position: fixed;
+}
+
+.container .left .menu .title a{
+    text-decoration: none;
+    color: #000000;
+    font-size: 25px;
+}
+
+.container .left .menu ul {
+    list-style: none;
+    padding-left: 5px;
+    text-transform: capitalize;
+}
+
+.container .left .menu ul li {
+    padding-bottom: 2px;
+    font-weight: bold;
+}
+
+.container .left .menu ul li a {
+    text-decoration: none;
+    color: #ff5252;
+    font-weight: normal;
+}
+
+/*.container .left ul li .category {*/
+/*    font-weight: bold;*/
+/*}*/
+
+.container .left .menu ul li  ul{
+    padding-bottom: 10px;
+}
+
+.container .content {
+    max-width: 760px;
+    padding-top: 20px;
+}
+.container .content p {
+    color: rgba(0, 0, 0, 0.87);
+    line-height: 26px;
+    font-stretch: 100%;
+    font-size: 16px;
+    padding-bottom: 10px;
+}
+.container .content h1 {
+    font-size: 34px;
+    line-height: 44px;
+    font-weight: 400;
+}
+.container .content hr {
+    border-top: 0;
+}
+.container .content li {
+    padding: 8px;
+}
+.container .content .readmore {
+    border: 1px solid #e4e4e4;
+    padding: 6px;
+    text-align: center;
+    cursor: pointer;
+    width: 200px;
+}
+.container .content .readmore:hover {
+    border: 1px solid #595959;
+}
+.container .content .readmore:hover a {
+    color: #131313;
+}
+.container .content .readmore a {
+    font-size: 15px;
+    text-decoration: none;
+    color: #767676;
+}
+
+@media screen and (max-width: 1200px) {
+    .container .right {
+        display: none;
+    }
+}
+.container .right {
+    font-family: 'Source Code Pro', monospace;
+    max-width: 200px;
+    padding-left: 20px;
+    margin-left: 20px;
+    border-left: 1px solid #efefef;
+}
+.container .right .infobox {
+    position: fixed;
+}
+.container .right .infobox a {
+    text-decoration: none;
+    color: #ff5252;
+}
+.container .right .infobox a:hover {
+    text-decoration: underline;
+}
+.container .right .infobox label {
+    font-size: 11px;
+    color: #a4a4a4;
+    text-transform: uppercase;
+    line-height: 14px;
+    display: block;
+}
+.container .right .infobox img {
+    width: 70px;
+    margin: 40px 0 10px 0;
+    display: block;
+}
+.container .right .infobox .block {
+    margin-top: 20px;
+}
+.container .right .infobox .author {
+    font-size: 16px;
+}
+.container .right .infobox .title {
+    font-size: 14px;
+}
+.container .right .infobox .socialmedia a {
+    font-size: 12px;
+    display: block;
+}
+.container .right .infobox .date {
+    font-size: 12px;
+}
+.container .right .infobox .tags a {
+    font-size: 12px;
+    display: block;
+}
+.chroma {
+    padding: 15px;
+    overflow: auto;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 13.6px;
+    line-height: 19px;
+    background-color: #f6f8fa;
+    /* LineTable */
+    /* LineHighlight */
+    /* LineNumbersTable */
+    /* LineNumbers */
+    /* Keyword */
+    /* KeywordConstant */
+    /* KeywordDeclaration */
+    /* KeywordNamespace */
+    /* KeywordPseudo */
+    /* KeywordReserved */
+    /* KeywordType */
+    /* Name */
+    /* NameAttribute */
+    /* NameBuiltin */
+    /* NameBuiltinPseudo */
+    /* NameClass */
+    /* NameConstant */
+    /* NameDecorator */
+    /* NameEntity */
+    /* NameException */
+    /* NameFunction */
+    /* NameFunctionMagic */
+    /* NameLabel */
+    /* NameNamespace */
+    /* NameOther */
+    /* NameProperty */
+    /* NameTag */
+    /* NameVariable */
+    /* NameVariableClass */
+    /* NameVariableGlobal */
+    /* NameVariableInstance */
+    /* NameVariableMagic */
+    /* Literal */
+    /* LiteralDate */
+    /* LiteralString */
+    /* LiteralStringAffix */
+    /* LiteralStringBacktick */
+    /* LiteralStringChar */
+    /* LiteralStringDelimiter */
+    /* LiteralStringDoc */
+    /* LiteralStringDouble */
+    /* LiteralStringEscape */
+    /* LiteralStringHeredoc */
+    /* LiteralStringInterpol */
+    /* LiteralStringOther */
+    /* LiteralStringRegex */
+    /* LiteralStringSingle */
+    /* LiteralStringSymbol */
+    /* LiteralNumber */
+    /* LiteralNumberBin */
+    /* LiteralNumberFloat */
+    /* LiteralNumberHex */
+    /* LiteralNumberInteger */
+    /* LiteralNumberIntegerLong */
+    /* LiteralNumberOct */
+    /* Operator */
+    /* OperatorWord */
+    /* Comment */
+    /* CommentHashbang */
+    /* CommentMultiline */
+    /* CommentSingle */
+    /* CommentSpecial */
+    /* CommentPreproc */
+    /* CommentPreprocFile */
+}
+.chroma .err {
+    color: #000000;
+}
+.chroma .lntd {
+    vertical-align: top;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+.chroma .lntable {
+    border-spacing: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width: auto;
+    overflow: auto;
+    display: block;
+}
+.chroma .hl {
+    display: block;
+    width: 100%;
+}
+.chroma .lnt {
+    margin-right: 0.4em;
+    padding: 0 0.4em 0 0.4em;
+}
+.chroma .ln {
+    margin-right: 0.4em;
+    padding: 0 0.4em 0 0.4em;
+}
+.chroma .k {
+    color: #a90d91;
+}
+.chroma .kc {
+    color: #a90d91;
+}
+.chroma .kd {
+    color: #a90d91;
+}
+.chroma .kn {
+    color: #a90d91;
+}
+.chroma .kp {
+    color: #a90d91;
+}
+.chroma .kr {
+    color: #a90d91;
+}
+.chroma .kt {
+    color: #a90d91;
+}
+.chroma .n {
+    color: #000000;
+}
+.chroma .na {
+    color: #836c28;
+}
+.chroma .nb {
+    color: #a90d91;
+}
+.chroma .bp {
+    color: #5b269a;
+}
+.chroma .nc {
+    color: #3f6e75;
+}
+.chroma .no {
+    color: #000000;
+}
+.chroma .nd {
+    color: #000000;
+}
+.chroma .ni {
+    color: #000000;
+}
+.chroma .ne {
+    color: #000000;
+}
+.chroma .nf {
+    color: #000000;
+}
+.chroma .fm {
+    color: #000000;
+}
+.chroma .nl {
+    color: #000000;
+}
+.chroma .nn {
+    color: #000000;
+}
+.chroma .nx {
+    color: #000000;
+}
+.chroma .py {
+    color: #000000;
+}
+.chroma .nt {
+    color: #000000;
+}
+.chroma .nv {
+    color: #000000;
+}
+.chroma .vc {
+    color: #000000;
+}
+.chroma .vg {
+    color: #000000;
+}
+.chroma .vi {
+    color: #000000;
+}
+.chroma .vm {
+    color: #000000;
+}
+.chroma .l {
+    color: #1c01ce;
+}
+.chroma .ld {
+    color: #1c01ce;
+}
+.chroma .s {
+    color: #c41a16;
+}
+.chroma .sa {
+    color: #c41a16;
+}
+.chroma .sb {
+    color: #c41a16;
+}
+.chroma .sc {
+    color: #2300ce;
+}
+.chroma .dl {
+    color: #c41a16;
+}
+.chroma .sd {
+    color: #c41a16;
+}
+.chroma .s2 {
+    color: #c41a16;
+}
+.chroma .se {
+    color: #c41a16;
+}
+.chroma .sh {
+    color: #c41a16;
+}
+.chroma .si {
+    color: #c41a16;
+}
+.chroma .sx {
+    color: #c41a16;
+}
+.chroma .sr {
+    color: #c41a16;
+}
+.chroma .s1 {
+    color: #c41a16;
+}
+.chroma .ss {
+    color: #c41a16;
+}
+.chroma .m {
+    color: #1c01ce;
+}
+.chroma .mb {
+    color: #1c01ce;
+}
+.chroma .mf {
+    color: #1c01ce;
+}
+.chroma .mh {
+    color: #1c01ce;
+}
+.chroma .mi {
+    color: #1c01ce;
+}
+.chroma .il {
+    color: #1c01ce;
+}
+.chroma .mo {
+    color: #1c01ce;
+}
+.chroma .o {
+    color: #000000;
+}
+.chroma .ow {
+    color: #000000;
+}
+.chroma .c {
+    color: #177500;
+}
+.chroma .ch {
+    color: #177500;
+}
+.chroma .cm {
+    color: #177500;
+}
+.chroma .c1 {
+    color: #177500;
+}
+.chroma .cs {
+    color: #177500;
+}
+.chroma .cp {
+    color: #633820;
+}
+.chroma .cpf {
+    color: #633820;
+}
+/* LineTableTD */
+/*# sourceMappingURL=style.css.map */

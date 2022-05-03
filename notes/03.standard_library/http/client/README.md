@@ -1,23 +1,17 @@
-package main
+
+# HTTP Client
+Here is a full example of sending a POST request, with headers, cookies and checking the response.
+
+```go
+package client
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 )
-
-func main() {
-	body, err := POST()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(body)
-}
 
 func POST() (string, error) {
 	// We create a http client with timeout
@@ -30,7 +24,7 @@ func POST() (string, error) {
 	reqBody := strings.NewReader(`{"key": "value", "key2": "value2"}`)
 
 	// Create request, we can use nil for body if we use GET
-	req, err := http.NewRequest("POST", "https://webhook.site/80aaa0bb-1c62-4168-8ac5-147e92575042", reqBody)
+	req, err := http.NewRequest("POST", "http://localhost:9000", reqBody)
 	if err != nil {
 		return "", err
 	}
@@ -73,6 +67,19 @@ func POST() (string, error) {
 
 	return body, nil
 }
+```
+
+## Post form data
+
+```go
+package client
+
+import (
+	"errors"
+	"net/http"
+	"net/url"
+	"time"
+)
 
 func PostFormData() error {
 	client := &http.Client{
@@ -97,3 +104,4 @@ func PostFormData() error {
 
 	return nil
 }
+```
