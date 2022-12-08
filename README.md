@@ -2,3 +2,15 @@
 A collection of (personal) notes on how to do most common things in the Go programming language. These notes aim to give very practical examples. Please send feedbacks if you find any errors in the code or a more correct/elegant way of doing things.
 
 You can visit the html version on hamochi.github.io/go-notes or download the md notes from the notes folder.
+
+TODO:
+- Enumns
+- Concurrency - Channels - queues 
+- Concurrency - Channels - fan out 
+- Concurrency - sync.Group 
+- Concurrency - mutexes 
+- JSON encode / decode
+- Read and write files
+- Errors - wrap, variables etc
+
+

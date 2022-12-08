@@ -1,6 +1,6 @@
 {
 "CreatedAt": "2022-04-28",
-"UpdatedAt": "2022-04-29",
+"UpdatedAt": "2022-05-03",
 "Title": "Enums - Go notes"
 }
 ---

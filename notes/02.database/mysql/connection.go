@@ -1,10 +1,12 @@
-package mysql
+package main
 
 import (
 	"context"
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
+	"fmt"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Person struct {
@@ -13,14 +15,28 @@ type Person struct {
 	Age  int
 }
 
+func main() {
+	db, err := Connect()
+	if err != nil {
+		//handle error
+	}
+
+	defer db.Close()
+
+	people, err := ReturnPeople(db, "harry potter")
+	if err != nil {
+		// handle error
+	}
+
+	fmt.Printf("%+v", people)
+}
+
 func Connect() (*sql.DB, error) {
 	// Create DB connection. sql.DB is not an open connection!
 	db, err := sql.Open("mysql", "username:password@tcp(0.0.0.0:3306)/database?parseTime=true")
 	if err != nil {
 		return nil, err
 	}
-
-	defer db.Close()
 
 	// Some connection settings, make sure to set them correct
 	db.SetMaxOpenConns(10) // default (if not set) is 0 = unlimited

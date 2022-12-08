@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/Depado/bfchroma"
-	"github.com/alecthomas/chroma/formatters/html"
-	"github.com/alecthomas/chroma/styles"
-	"github.com/russross/blackfriday/v2"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
 	"text/template"
+
+	"github.com/Depado/bfchroma"
+	"github.com/alecthomas/chroma/formatters/html"
+	"github.com/alecthomas/chroma/styles"
+	"github.com/russross/blackfriday/v2"
 )
 
 type Post struct {

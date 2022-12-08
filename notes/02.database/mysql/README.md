@@ -9,13 +9,15 @@
 ## Connection
 Make sure to import mysql driver with _.
 ```go
-package mysql
+package main
 
 import (
 	"context"
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
+	"fmt"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Person struct {
@@ -24,14 +26,28 @@ type Person struct {
 	Age  int
 }
 
+func main() {
+	db, err := Connect()
+	if err != nil {
+		//handle error
+	}
+
+	defer db.Close()
+
+	people, err := ReturnPeople(db, "harry potter")
+	if err != nil {
+		// handle error
+	}
+
+	fmt.Printf("%+v", people)
+}
+
 func Connect() (*sql.DB, error) {
 	// Create DB connection. sql.DB is not an open connection!
 	db, err := sql.Open("mysql", "username:password@tcp(0.0.0.0:3306)/database?parseTime=true")
 	if err != nil {
 		return nil, err
 	}
-
-	defer db.Close()
 
 	// Some connection settings, make sure to set them correct
 	db.SetMaxOpenConns(10) // default (if not set) is 0 = unlimited
@@ -57,7 +73,7 @@ func Connect() (*sql.DB, error) {
 
 ## Select many rows
 ```go
-package mysql
+package main
 
 import (
 	"context"
@@ -101,7 +117,7 @@ func ReturnPeople(db *sql.DB, name string) ([]Person, error) {
 
 ## Select single row
 ```go
-package mysql
+package main
 
 import (
 	"context"
@@ -135,7 +151,7 @@ func ReturnPerson(db *sql.DB, id int) (Person, error) {
 When inserting we can optionally get affected rows and last inserted id. Notice that
 ExecContext(ctx, query, params) does statement prepare under the hood.
 ```go
-package mysql
+package main
 
 import (
 	"context"
@@ -170,7 +186,7 @@ func AddPerson(db *sql.DB, name string, age int) (int64, int64, error) {
 
 ## Update
 ```go
-package mysql
+package main
 
 import (
 	"context"
@@ -200,7 +216,7 @@ func UpdatePerson(db *sql.DB, p Person) (int64, error) {
 
 ## Delete
 ```go
-package mysql
+package main
 
 import (
 	"context"
@@ -231,7 +247,7 @@ func DeletePerson(db *sql.DB, id int) (int64, error) {
 ## Prepare
 Prepare statements are useful when you want to prepare the data once and execute many times, for example inserting many rows in table.
 ```go
-package mysql
+package main
 
 import (
 	"context"
@@ -263,7 +279,7 @@ func Add(db *sql.DB, people ...Person) error {
 ## Transactions
 Transactions are very useful when you need to do many database operations (for example creating entries in different tables) and have the possibility to roll back in case one of the operations failed.
 ```go
-package mysql
+package main
 
 import (
 	"context"
