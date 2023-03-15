@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func POST() (string, error) {
+func POST() ([]byte, error) {
 	// We create a http client with timeout
 	client := &http.Client{
 		Timeout: time.Second * 10,
@@ -21,7 +21,7 @@ func POST() (string, error) {
 	// Create request, we can use nil for body if we use GET
 	req, err := http.NewRequest("POST", "http://localhost:9000", reqBody)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Add some header
@@ -38,7 +38,7 @@ func POST() (string, error) {
 	// Send the request
 	res, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Make sure we close body
@@ -48,17 +48,14 @@ func POST() (string, error) {
 	// and store it as []byte
 	bodyBuffer, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Get status code from result and do some control
 	statusCode := res.StatusCode
 	if statusCode != http.StatusOK {
-		return "", errors.New("service did not return status 200")
+		return nil, errors.New("service did not return status 200")
 	}
 
-	// We convert our byte array to String
-	body := string(bodyBuffer)
-
-	return body, nil
+	return bodyBuffer, nil
 }

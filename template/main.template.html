@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
-    <link href="{{.Level}}style.css" rel="stylesheet">
-    <title>{{.Title }}</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
+	<link href="{{.Level}}style.css" rel="stylesheet">
+	<!-- <script src="{{.Level}}functions.js"></script> -->
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<title>{{.Title }}</title>
 </head>
+
 <body>
-<div class="container">
-    <div class="left">
-        <div class="menu">
-            <div class="title"><a href="{{.Level}}">Go Notes</a></div>
-            {{.Menu}}
-        </div>
-    </div>
-    <div class="content">
-        {{.Content}}
-    </div>
-    <div class="right">
-        <<infobox.template.html>>
-    </div>
-</div>
+	<div class="container" x-data="{ open: window.innerWidth < 950 ? false: true }">
+		<div class="burger"><span class="icon" @click="open = open==false? true: false">|||</span></div>
+		<div class="left" x-show="open">
+			<div class="menu">
+				<div class="title"><a href="{{.Level}}">Go Notes</a></div>
+				{{.Menu}}
+			</div>
+		</div>
+		<div class="content">
+			{{.Content}}
+		</div>
+		<div class="right">
+			<<infobox.template.html>>
+		</div>
+	</div>
 </body>
+
 </html>

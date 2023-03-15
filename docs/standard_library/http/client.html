@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
-    <link href="../../style.css" rel="stylesheet">
-    <title>Http Client - Go notes</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
+	<link href="../../style.css" rel="stylesheet">
+	<!-- <script src="../../functions.js"></script> -->
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<title>Http Client - Go notes</title>
 </head>
+
 <body>
-<div class="container">
-    <div class="left">
-        <div class="menu">
-            <div class="title"><a href="../../">Go Notes</a></div>
-            <ul><li>basics<ul><li><a href="../../basics/enums.html">enums</a></li></ul></li><li>database<ul><li><a href="../../database/mysql.html">mysql</a></li></ul></li><li>standard_library<ul><li>http<ul><li><a href="../../standard_library/http/client.html">client</a></li></ul></li><li>io<ul><li><a href="../../standard_library/io/reader.html">reader</a></li></ul></li></ul></li></ul>
-        </div>
-    </div>
-    <div class="content">
-        <h1>HTTP Client</h1>
+	<div class="container" x-data="{ open: window.innerWidth < 950 ? false: true }">
+		<div class="burger"><span class="icon" @click="open = open==false? true: false">|||</span></div>
+		<div class="left" x-show="open">
+			<div class="menu">
+				<div class="title"><a href="../../">Go Notes</a></div>
+				<ul><li>obsidian</li><li>basics<ul><li><a href="../../basics/enums.html">enums</a></li></ul></li><li>database<ul><li><a href="../../database/mysql.html">mysql</a></li></ul></li><li>standard_library<ul><li>http<ul><li><a href="../../standard_library/http/client.html">client</a></li></ul></li><li>io<ul><li><a href="../../standard_library/io/reader.html">reader</a></li></ul></li></ul></li></ul>
+			</div>
+		</div>
+		<div class="content">
+			<h1>HTTP Client</h1>
 
 <p>Here is a full example of sending a POST request, with headers, cookies and checking the response.</p>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">client</span>
@@ -29,7 +34,7 @@
 </span></span><span class="line"><span class="cl">	<span class="s">&#34;time&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">POST</span><span class="p">(</span><span class="p">)</span> <span class="p">(</span><span class="kt">string</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">POST</span><span class="p">(</span><span class="p">)</span> <span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="c1">// We create a http client with timeout
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">client</span> <span class="o">:=</span> <span class="o">&amp;</span><span class="nx">http</span><span class="p">.</span><span class="nx">Client</span><span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="nx">Timeout</span><span class="p">:</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Second</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
@@ -42,7 +47,7 @@
 </span></span><span class="line"><span class="cl">	<span class="c1">// Create request, we can use nil for body if we use GET
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">req</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">http</span><span class="p">.</span><span class="nf">NewRequest</span><span class="p">(</span><span class="s">&#34;POST&#34;</span><span class="p">,</span> <span class="s">&#34;http://localhost:9000&#34;</span><span class="p">,</span> <span class="nx">reqBody</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="c1">// Add some header
@@ -59,7 +64,7 @@
 </span></span><span class="line"><span class="cl">	<span class="c1">// Send the request
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">res</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">client</span><span class="p">.</span><span class="nf">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="c1">// Make sure we close body
@@ -69,19 +74,16 @@
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// and store it as []byte
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">bodyBuffer</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">ioutil</span><span class="p">.</span><span class="nf">ReadAll</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">err</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="c1">// Get status code from result and do some control
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">statusCode</span> <span class="o">:=</span> <span class="nx">res</span><span class="p">.</span><span class="nx">StatusCode</span>
 </span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">statusCode</span> <span class="o">!=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">StatusOK</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;service did not return status 200&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">nil</span><span class="p">,</span> <span class="nx">errors</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="s">&#34;service did not return status 200&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="c1">// We convert our byte array to String
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">body</span> <span class="o">:=</span> <span class="nb">string</span><span class="p">(</span><span class="nx">bodyBuffer</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">body</span><span class="p">,</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">bodyBuffer</span><span class="p">,</span> <span class="kc">nil</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre>
 <h2>Post form data</h2>
@@ -118,9 +120,9 @@
 </span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre>
-    </div>
-    <div class="right">
-        <div class="infobox">
+		</div>
+		<div class="right">
+			<div class="infobox">
     <img src="https://avatars1.githubusercontent.com/u/196192?v=4">
     <div class="author">Hamid Abouei</div>
     <div class="title">Developer</div>
@@ -146,7 +148,8 @@
         <div class="socialmedia"><a href="mailto:hamochi@gmail.com">@email</a></div>
     </div>
 </div>
-    </div>
-</div>
+		</div>
+	</div>
 </body>
+
 </html>

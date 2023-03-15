@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
-    <link href="../style.css" rel="stylesheet">
-    <title>MySQL - Go notes</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
+	<link href="../style.css" rel="stylesheet">
+	<!-- <script src="../functions.js"></script> -->
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<title>MySQL - Go notes</title>
 </head>
+
 <body>
-<div class="container">
-    <div class="left">
-        <div class="menu">
-            <div class="title"><a href="../">Go Notes</a></div>
-            <ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li></ul></li><li>database<ul><li><a href="../database/mysql.html">mysql</a></li></ul></li><li>standard_library<ul><li>http<ul><li><a href="../standard_library/http/client.html">client</a></li></ul></li><li>io<ul><li><a href="../standard_library/io/reader.html">reader</a></li></ul></li></ul></li></ul>
-        </div>
-    </div>
-    <div class="content">
-        <h1>MySQL</h1>
+	<div class="container" x-data="{ open: window.innerWidth < 950 ? false: true }">
+		<div class="burger"><span class="icon" @click="open = open==false? true: false">|||</span></div>
+		<div class="left" x-show="open">
+			<div class="menu">
+				<div class="title"><a href="../">Go Notes</a></div>
+				<ul><li>obsidian</li><li>basics<ul><li><a href="../basics/enums.html">enums</a></li></ul></li><li>database<ul><li><a href="../database/mysql.html">mysql</a></li></ul></li><li>standard_library<ul><li>http<ul><li><a href="../standard_library/http/client.html">client</a></li></ul></li><li>io<ul><li><a href="../standard_library/io/reader.html">reader</a></li></ul></li></ul></li></ul>
+			</div>
+		</div>
+		<div class="content">
+			<h1>MySQL</h1>
 
 <ul>
 <li>Use Query() for SELECT statements, and always handle the returned rows and iterate over them.</li>
@@ -339,9 +344,9 @@ ExecContext(ctx, query, params) does statement prepare under the hood.</p>
 <p>Best is to avoid nullable columns in our table if possible. But if we do have nullable columns
 we should use special null types from database/sql or define our own.</p>
 
-    </div>
-    <div class="right">
-        <div class="infobox">
+		</div>
+		<div class="right">
+			<div class="infobox">
     <img src="https://avatars1.githubusercontent.com/u/196192?v=4">
     <div class="author">Hamid Abouei</div>
     <div class="title">Developer</div>
@@ -367,7 +372,8 @@ we should use special null types from database/sql or define our own.</p>
         <div class="socialmedia"><a href="mailto:hamochi@gmail.com">@email</a></div>
     </div>
 </div>
-    </div>
-</div>
+		</div>
+	</div>
 </body>
+
 </html>
