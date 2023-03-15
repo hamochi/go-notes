@@ -55,6 +55,10 @@ body {
 	display: inline-block;
 	rotate: 90deg;
 	margin: 0 10px 0 0;
+	position: absolute;
+	top: 5px;
+	right: 30px;
+	cursor: pointer;
   }
   .container .left {
 	display: none !important;
@@ -110,6 +114,7 @@ body {
     max-width: 760px;
     /* padding-top: 20px; */
 	padding: 20px;
+	width: calc(100% - 40px);
 }
 .container .content p {
     color: rgba(0, 0, 0, 0.87);
