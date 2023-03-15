@@ -1,9 +1,7 @@
 package reader
 
 import (
-	"fmt"
 	"io"
-	"os"
 	"strings"
 )
 
@@ -41,20 +39,4 @@ func (u *UpperCaseReader) Read(p []byte) (int, error) {
 
 	copy(p, buf)
 	return n, nil
-}
-
-func main() {
-	reader := NewUpperCaseReader("The quick brown fox jumps over the lazy dog")
-	p := make([]byte, 4)
-	for {
-		n, err := reader.Read(p)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		fmt.Print(string(p[:n]))
-	}
 }
