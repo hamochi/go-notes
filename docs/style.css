@@ -11,6 +11,36 @@ body {
 }
 
 .burger {display: none}
+.topMenu {
+  display: none;
+  background: #fff;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.topMenu ul {
+  list-style: none;
+  text-align: center;
+  width: 200px;
+  margin: 0 auto;
+  text-transform: capitalize;
+  padding:0;
+  font-size: 30px;
+}
+
+.topMenu ul li {
+  padding-bottom: 10px;
+  
+}
+
+.topMenu ul:first-child {
+  margin-top: 10%;
+}
+
+
 
 @media screen and (max-width: 950px) {
   .burger {
@@ -26,25 +56,11 @@ body {
 	rotate: 90deg;
 	margin: 0 10px 0 0;
   }
-  .container {
-	position: inherit;
-	padding: 0;
-	margin: 0;
-  }
   .container .left {
-	display: none;
-	
-	position: absolute;
-	width: 100% !important;
-	height: 100% !important;
-	background: #e2e2e2
+	display: none !important;
   }
-
-  .container .left .menu {
-	position: relative !important;;
-	margin: 0 auto;
-	width: 200px;
-	text-align: center;
+  .topMenu {
+	display: block;
   }
 }
 
