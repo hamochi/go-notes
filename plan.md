@@ -1,0 +1,13 @@
+### io
+- Reading
+	- Reader
+	- Read
+	- ReadAll
+	- Custom reader
+- Writing
+	- Writer
+	- Write
+	- WriteString
+- Copying
+	- CopyBuffer
+	- TeeReader

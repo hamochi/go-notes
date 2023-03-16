@@ -1,4 +1,4 @@
-package reader
+package reading
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestReaderFromString(t *testing.T) {
-	reader := ReaderFromString("The quick brown fox jumps over the lazy dog")
+func TestCustomReader(t *testing.T) {
+	reader := NewUpperCaseReader("The quick brown fox jumps over the lazy dog")
 	p := make([]byte, 3)
 	for {
 		n, err := reader.Read(p)

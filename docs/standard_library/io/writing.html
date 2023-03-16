@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
+	<link href="../../style.css?ver=5" rel="stylesheet">
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<title>IO - Writing - Go notes</title>
+</head>
+
+<body>
+	<div class="container" x-data="{ open: window.innerWidth < 950 ? false: true }">
+		<div class="burger"><span class="icon" @click="open = open==false? true: false">|||</span></div>
+		<div class="topMenu" x-show="open">
+			<ul><li>basics<ul><li><a href="../../basics/enums.html">enums</a></li></ul></li><li>database<ul><li><a href="../../database/mysql.html">mysql</a></li></ul></li><li>standard_library<ul><li>http<ul><li><a href="../../standard_library/http/client.html">client</a></li></ul></li><li>io<ul><li><a href="../../standard_library/io/reading.html">reading</a></li><li><a href="../../standard_library/io/writing.html">writing</a></li><li><a href="../../standard_library/io/copying.html">copying</a></li></ul></li></ul></li></ul>
+		</div>
+		<div class="left">
+			<div class="menu">
+				<div class="title"><a href="../../">Go Notes</a></div>
+				<ul><li>basics<ul><li><a href="../../basics/enums.html">enums</a></li></ul></li><li>database<ul><li><a href="../../database/mysql.html">mysql</a></li></ul></li><li>standard_library<ul><li>http<ul><li><a href="../../standard_library/http/client.html">client</a></li></ul></li><li>io<ul><li><a href="../../standard_library/io/reading.html">reading</a></li><li><a href="../../standard_library/io/writing.html">writing</a></li><li><a href="../../standard_library/io/copying.html">copying</a></li></ul></li></ul></li></ul>
+			</div>
+		</div>
+		<div class="content">
+			<h1>IO streaming</h1>
+
+<p>In Go we can model data as streams. We can stream data from sources with io.Reader and save data to destinations with io.Writer. Sources can be  files, network connections, std out, strings etc.</p>
+
+<h2>Writer</h2>
+
+<p>Let&rsquo;s look at the writer interface:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Writer</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">Write</span><span class="p">(</span><span class="nx">p</span> <span class="p">[</span><span class="p">]</span><span class="kt">byte</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Any type that implements the above Write method is a Writer. A few examples of writers are:
+- bytes.Buffer
+- os.File
+- os.Stdout (which is of type os.File)
+- http.Header
+- http.ResponseWriter</p>
+
+<h4>Writing to a Writer</h4>
+
+<p>So a simple example of writing to a write could look like:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;os&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;hello\n&#34;</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&#34;world&#34;</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Output:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl">hello
+</span></span><span class="line"><span class="cl">world
+</span></span></code></pre>
+<h4>Writing a string to a writer</h4>
+
+<p>In a lot of cases you might want to write a string to a Writer. You can of course cast the string to []byte but there is a convenient function in the io package called WriteString:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">WriteString</span><span class="p">(</span><span class="nx">w</span> <span class="nx">Writer</span><span class="p">,</span> <span class="nx">s</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+</span></span></code></pre>
+<p>The above example would be:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;os&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;io&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">io</span><span class="p">.</span><span class="nf">WriteString</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="s">&#34;hello\n&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">io</span><span class="p">.</span><span class="nf">WriteString</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="s">&#34;world&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Output:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl">hello
+</span></span><span class="line"><span class="cl">world
+</span></span></code></pre>
+<h3>Writing with fmt</h3>
+
+<p>You can also some of the functions from the fmt package that uses the a io.Writer as an argument to write to it.</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="c1">// fmt package
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Fprint</span><span class="p">(</span><span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">,</span> <span class="nx">a</span> <span class="o">...</span><span class="nx">any</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Fprintf</span><span class="p">(</span><span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">,</span> <span class="nx">format</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">a</span> <span class="o">...</span><span class="nx">any</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Fprintln</span><span class="p">(</span><span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">,</span> <span class="nx">a</span> <span class="o">...</span><span class="nx">any</span><span class="p">)</span> <span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
+</span></span></code></pre>
+<p>Above example could look like:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;os&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Fprintf</span><span class="p">(</span><span class="nx">os</span><span class="p">.</span><span class="nx">Stdout</span><span class="p">,</span> <span class="s">&#34;%s\n%s&#34;</span><span class="p">,</span> <span class="s">&#34;hello&#34;</span><span class="p">,</span> <span class="s">&#34;world&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Read more about it in the <a href="#">fmt section</a>.</p>
+
+		</div>
+		<div class="right">
+			<div class="infobox">
+    <img src="https://avatars1.githubusercontent.com/u/196192?v=4">
+    <div class="author">Hamid Abouei</div>
+    <div class="title">Developer</div>
+
+    <div class="block">
+        <label>Created at</label>
+        <div class="date">2023-03-25</div>
+    </div>
+
+    <div class="block">
+        <label>Updated at</label>
+        <div class="date">2023-03-15</div>
+    </div>
+
+    <div class="block">
+        <label>Connect</label>
+        <div class="socialmedia"><a href="www.twitter.com/hamochis">@github</a></div>
+        <div class="socialmedia"><a href="www.linkedin.com/hamidabouei">@linkedIn</a></div>
+    </div>
+
+    <div class="block">
+        <label>Feedback</label>
+        <div class="socialmedia"><a href="mailto:hamochi@gmail.com">@email</a></div>
+    </div>
+</div>
+		</div>
+	</div>
+</body>
+
+</html>

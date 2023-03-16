@@ -14,14 +14,14 @@ type Reader interface {
 }
 ```
 
-### Reading from a Reader
+### Read() - Reading from a Reader
 In order to read from a Reader we just call the Read() method in a loop and load chunks of data in a byte array until we get an EOT error. Let's look at a simple example where we convert a string to a Reader.
 
 ```bash 
 stringreader.go
 ```
 ```go
-package reader
+package reading
 
 import (
 	"io"
@@ -37,7 +37,7 @@ func ReaderFromString(text string) io.Reader {
 stringreader_test.go
 ```
 ```go
-package reader
+package reading
 
 import (
 	"fmt"
@@ -81,7 +81,7 @@ gdo 1
 
 ```
 
-### Reading all at once
+### ReadAll() - Reading all at once
 If we want to all the data at once, without looping we can use the the ReadAll function from the io package.
 
 ```go
@@ -93,7 +93,7 @@ func ReadAll(r Reader)([][byte] (error)
 stringreader_readall_test.go
 ```
 ```go
-package reader
+package reading
 
 import (
 	"fmt"
@@ -124,7 +124,7 @@ Lets look at an example where we create a reader that changes a string to upper 
 custom_reader.go
 ```
 ```go
-package reader
+package reading
 
 import (
 	"io"
@@ -173,7 +173,7 @@ Let's test it
 custom_reader_test.go
 ```
 ```go
-package reader
+package reading
 
 import (
 	"fmt"
@@ -216,100 +216,3 @@ AZY 3
 G 1
 ```
 
-### Creating a custom reader based on an other reader
-A more common case is to use one reader as the source of an other reader. Let's rebuild our UpperCaseReader.
-
-```bash
-custom_reader2.go
-```
-```go
-package reader
-
-import (
-	"bytes"
-	"io"
-	"strings"
-)
-
-type UpperCaseReader2 struct {
-	src io.Reader
-}
-
-func NewUpperCaseReader2(src io.Reader) *UpperCaseReader2 {
-	return &UpperCaseReader2{
-		src: src,
-	}
-}
-
-func upperCase2(b byte) byte {
-	// let's use built-in converter and return the first byte (since we don't expect more than on byte)
-	return strings.ToUpper(string(b))[0]
-}
-
-func (u *UpperCaseReader2) Read(p []byte) (int, error) {
-	// we create a new buffer to read into, same size as p
-	b := make([]byte, len(p))
-
-	// we read from src Reader
-	n, err := u.src.Read(b)
-	if err != nil {
-		return 0, err
-	}
-
-	// we make it into upper case
-	b = bytes.ToUpper(b)
-
-	// and copy it into p
-	copy(p, b)
-	return n, nil
-}
-```
-
-Let's test it
-```bash
-custom_reader2_test.go
-```
-```go
-package reader
-
-import (
-	"fmt"
-	"io"
-	"strings"
-	"testing"
-)
-
-func TestCustomReader2(t *testing.T) {
-	reader := strings.NewReader("The quick brown fox jumps over the lazy dog")
-	upperCaseReader := NewUpperCaseReader2(reader)
-	p := make([]byte, 3)
-	for {
-		n, err := upperCaseReader.Read(p)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			t.Fatal(err)
-		}
-		fmt.Println(string(p), n)
-	}
-}
-```
-
-Output:
-```bash
-THE 3
- QU 3
-ICK 3
- BR 3
-OWN 3
- FO 3
-X J 3
-UMP 3
-S O 3
-VER 3
- TH 3
-E L 3
-AZY 3
- DO 3
-```
