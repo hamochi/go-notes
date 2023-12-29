@@ -6,7 +6,7 @@ type error interface {
 	Error() string
 }
 ```
-Latly I've been using a custom error type that wraps errors to show from where they are coming from. It works by whenever I want to return an error up the stack, I wrap it in my custom error type. Here is a simple example of how it can be used.
+Recently, I've started using a custom error type that wraps errors, providing clear information about their source. Whenever I need to return an error up the stack, I encapsulate it in this custom error type. Below is a simple example demonstrating its application.
 
 ```go
 customerId := 1

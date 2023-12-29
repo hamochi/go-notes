@@ -30,7 +30,7 @@
 </span></span><span class="line"><span class="cl">	<span class="nf">Error</span><span class="p">(</span><span class="p">)</span> <span class="kt">string</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre>
-<p>Latly I&rsquo;ve been using a custom error type that wraps errors to show from where they are coming from. It works by whenever I want to return an error up the stack, I wrap it in my custom error type. Here is a simple example of how it can be used.</p>
+<p>Recently, I&rsquo;ve started using a custom error type that wraps errors, providing clear information about their source. Whenever I need to return an error up the stack, I encapsulate it in this custom error type. Below is a simple example demonstrating its application.</p>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="nx">customerId</span> <span class="o">:=</span> <span class="mi">1</span>
 </span></span><span class="line"><span class="cl"><span class="nx">customerName</span> <span class="o">:=</span> <span class="s">&#34;Frank&#34;</span>
 </span></span><span class="line"><span class="cl">
