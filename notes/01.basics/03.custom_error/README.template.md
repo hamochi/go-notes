@@ -13,38 +13,16 @@ type error interface {
 ```
 Recently, I've started using a custom error type that wraps errors, providing clear information about their source. Whenever I need to return an error up the stack, I encapsulate it in this custom error type. Below is a simple example demonstrating its application.
 
-```go
-customerId := 1
-customerName := "Frank"
+<<cerr_test.go>>
 
-// Simple wrapping and returning
-somevalue, err := someFunctionThatCanReturnError()
-if err != nil {
-  return cerr.New(err)
-}
-
-// Adding some additional message
-somevalue2, err := someFunction2ThatCanReturnError()
-if err != nil {
-  return cerr.New(err, "could not get value")
-}
-
-
-// Adding some additional messages
-somevalue3, err := someFunction3ThatCanReturnError()
-if err != nil {
-  return cerr.New(err, "could not get value", customerId, "some other message")
-}
-
-// Adding some additional formated messages
-somevalue4, err := someFunction4ThatCanReturnError()
-if err != nil {
-  return cerr.New(err, "could not get value for user %d, %s", customerId, customerName)
-}
-
-// Can also create a new error 
-if customerId != 1 {
-  return cerr.NewError("invalid customerId")
-}
+### Output
+```bash
+cerr_test.go->One:26 something went wrong with user 123 - error 1
+cerr_test.go->Two:32 cerr_test.go->Three:37 something went wrong with user 123 John Doe - error 2
+cerr_test.go->Four:41 something went wrong
 ```
 
+
+## Implementation
+
+<<cerr.go>>

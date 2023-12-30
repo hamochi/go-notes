@@ -31,37 +31,146 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre>
 <p>Recently, I&rsquo;ve started using a custom error type that wraps errors, providing clear information about their source. Whenever I need to return an error up the stack, I encapsulate it in this custom error type. Below is a simple example demonstrating its application.</p>
-<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="nx">customerId</span> <span class="o">:=</span> <span class="mi">1</span>
-</span></span><span class="line"><span class="cl"><span class="nx">customerName</span> <span class="o">:=</span> <span class="s">&#34;Frank&#34;</span>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">cerr_test</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Simple wrapping and returning
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">somevalue</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">someFunctionThatCanReturnError</span><span class="p">(</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">cerr</span> <span class="s">&#34;go-notes/notes/01.basics/03.custom_error&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;testing&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">userId</span> <span class="p">=</span> <span class="mi">123</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">userName</span> <span class="p">=</span> <span class="s">&#34;John Doe&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestErrors</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nf">One</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="p">=</span> <span class="nf">Two</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="p">=</span> <span class="nf">Four</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Adding some additional message
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">somevalue2</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">someFunction2ThatCanReturnError</span><span class="p">(</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;could not get value&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">One</span><span class="p">(</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">err1</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;error 1&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Add some context to the error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">err1</span><span class="p">,</span> <span class="s">&#34;something went wrong with user&#34;</span><span class="p">,</span> <span class="nx">userId</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Two</span><span class="p">(</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nf">Three</span><span class="p">(</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Adding some additional messages
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">somevalue3</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">someFunction3ThatCanReturnError</span><span class="p">(</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;could not get value&#34;</span><span class="p">,</span> <span class="nx">customerId</span><span class="p">,</span> <span class="s">&#34;some other message&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Simply wrap the error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Adding some additional formated messages
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">somevalue4</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">someFunction4ThatCanReturnError</span><span class="p">(</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">New</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="s">&#34;could not get value for user %d, %s&#34;</span><span class="p">,</span> <span class="nx">customerId</span><span class="p">,</span> <span class="nx">customerName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Three</span><span class="p">(</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">err2</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;error 2&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// Add some formatted context to the error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">Newf</span><span class="p">(</span><span class="nx">err2</span><span class="p">,</span> <span class="s">&#34;something went wrong with user %d %s&#34;</span><span class="p">,</span> <span class="nx">userId</span><span class="p">,</span> <span class="nx">userName</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Can also create a new error 
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="nx">customerId</span> <span class="o">!=</span> <span class="mi">1</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">NewError</span><span class="p">(</span><span class="s">&#34;invalid customerId&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Four</span><span class="p">(</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Create a new error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nx">cerr</span><span class="p">.</span><span class="nf">NewError</span><span class="p">(</span><span class="s">&#34;something went wrong&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<h3>Output</h3>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl">cerr_test.go-&gt;One:26 something went wrong with user <span class="m">123</span> - error <span class="m">1</span>
+</span></span><span class="line"><span class="cl">cerr_test.go-&gt;Two:32 cerr_test.go-&gt;Three:37 something went wrong with user <span class="m">123</span> John Doe - error <span class="m">2</span>
+</span></span><span class="line"><span class="cl">cerr_test.go-&gt;Four:41 something went wrong
+</span></span></code></pre>
+<h2>Implementation</h2>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">cerr</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;path/filepath&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;runtime&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;strings&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">CustomError</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">message</span>  <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fileName</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">line</span>     <span class="kt">int</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span>      <span class="kt">error</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">New</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">,</span> <span class="nx">message</span> <span class="o">...</span><span class="nx">any</span><span class="p">)</span> <span class="o">*</span><span class="nx">CustomError</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fileName</span><span class="p">,</span> <span class="nx">line</span> <span class="o">:=</span> <span class="nf">getCallerInfo</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">finalMessage</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nx">Builder</span><span class="p">{</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="k">range</span> <span class="nx">message</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="nx">i</span> <span class="p">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">finalMessage</span><span class="p">.</span><span class="nf">WriteString</span><span class="p">(</span><span class="s">&#34; &#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">finalMessage</span><span class="p">.</span><span class="nf">WriteString</span><span class="p">(</span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprint</span><span class="p">(</span><span class="nx">message</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">CustomError</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">message</span><span class="p">:</span>  <span class="nx">finalMessage</span><span class="p">.</span><span class="nf">String</span><span class="p">(</span><span class="p">)</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fileName</span><span class="p">:</span> <span class="nx">fileName</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">line</span><span class="p">:</span>     <span class="nx">line</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span><span class="p">:</span>      <span class="nx">err</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Newf</span><span class="p">(</span><span class="nx">err</span> <span class="kt">error</span><span class="p">,</span> <span class="nx">format</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">a</span> <span class="o">...</span><span class="nx">any</span><span class="p">)</span> <span class="o">*</span><span class="nx">CustomError</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fileName</span><span class="p">,</span> <span class="nx">line</span> <span class="o">:=</span> <span class="nf">getCallerInfo</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">message</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="nx">format</span><span class="p">,</span> <span class="nx">a</span><span class="o">...</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">CustomError</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">message</span><span class="p">:</span>  <span class="nx">message</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fileName</span><span class="p">:</span> <span class="nx">fileName</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">line</span><span class="p">:</span>     <span class="nx">line</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span><span class="p">:</span>      <span class="nx">err</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewError</span><span class="p">(</span><span class="nx">message</span> <span class="kt">string</span><span class="p">)</span> <span class="o">*</span><span class="nx">CustomError</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fileName</span><span class="p">,</span> <span class="nx">line</span> <span class="o">:=</span> <span class="nf">getCallerInfo</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="o">&amp;</span><span class="nx">CustomError</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">message</span><span class="p">:</span>  <span class="s">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fileName</span><span class="p">:</span> <span class="nx">fileName</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">line</span><span class="p">:</span>     <span class="nx">line</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">err</span><span class="p">:</span>      <span class="nx">err</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">CustomError</span><span class="p">)</span> <span class="nf">Error</span><span class="p">(</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">message</span> <span class="o">==</span> <span class="s">&#34;&#34;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s:%d %s&#34;</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">fileName</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">line</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%s:%d %s - %s&#34;</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">fileName</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">line</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">err</span><span class="p">.</span><span class="nf">Error</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">e</span> <span class="o">*</span><span class="nx">CustomError</span><span class="p">)</span> <span class="nf">Unwrap</span><span class="p">(</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">e</span><span class="p">.</span><span class="nx">err</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">getCallerInfo</span><span class="p">(</span><span class="p">)</span> <span class="p">(</span><span class="nx">file</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">line</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">pc</span><span class="p">,</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">line</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">Caller</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="c1">// use 2 as argument to retrieve information about the calling function
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="s">&#34;unknown&#34;</span><span class="p">,</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">caller</span> <span class="o">:=</span> <span class="nx">runtime</span><span class="p">.</span><span class="nf">FuncForPC</span><span class="p">(</span><span class="nx">pc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">caller</span> <span class="o">==</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">line</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fullFileName</span><span class="p">,</span> <span class="nx">line</span> <span class="o">:=</span> <span class="nx">caller</span><span class="p">.</span><span class="nf">FileLine</span><span class="p">(</span><span class="nx">pc</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">fileName</span> <span class="o">:=</span> <span class="nx">filepath</span><span class="p">.</span><span class="nf">Base</span><span class="p">(</span><span class="nx">fullFileName</span><span class="p">)</span> <span class="c1">// Get just the filename
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">fullFunctionName</span> <span class="o">:=</span> <span class="nx">caller</span><span class="p">.</span><span class="nf">Name</span><span class="p">(</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">functionNameParts</span> <span class="o">:=</span> <span class="nx">strings</span><span class="p">.</span><span class="nf">Split</span><span class="p">(</span><span class="nx">fullFunctionName</span><span class="p">,</span> <span class="s">&#34;.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">functionName</span> <span class="o">:=</span> <span class="nx">functionNameParts</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="nx">functionNameParts</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">file</span> <span class="p">=</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%v-&gt;%v&#34;</span><span class="p">,</span> <span class="nx">fileName</span><span class="p">,</span> <span class="nx">functionName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">line</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre>
 		</div>
