@@ -328,4 +328,4 @@ func NewUser(db *sql.DB, p Person, email string) error {
 
 ## Null Values
 Best is to avoid nullable columns in our table if possible. But if we do have nullable columns
-we should use special null types from database/sql or define our own.
+we should use special null types from database/sql or simply use pointers. 

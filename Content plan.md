@@ -21,12 +21,8 @@
 ### Common
 - Http client
 - JSON
-- File
+- File - read, write, embeddings
 - Mysql
-
-### Server
-- Http server
-- Middleware 
 
 
 ### Concurrency
@@ -45,3 +41,30 @@
 - Fuzz testing
 
 
+### Gin
+- Routes
+- Juice
+- Middleware
+  -- Request logger and payload limiter
+
+
+
+  ----------------
+
+  
+## Basics
+- Enums
+- Streaming
+- Error handling
+
+### Common
+- Http client
+- JSON
+- File - read, write, embeddings
+- Mysql
+
+### Gin
+- Routes
+- Juice
+- Middleware
+  -- Request logger and payload limiter

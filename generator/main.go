@@ -46,7 +46,7 @@ func main() {
 
 	menu := strings.ReplaceAll(menuHtml.String(), "<ul></ul>", "")
 
-	rawMainTemplate, err := ioutil.ReadFile("template/main.template.html")
+	rawMainTemplate, err := os.ReadFile("template/main.template.html")
 	if err != nil {
 		panic(err)
 	}
@@ -175,7 +175,7 @@ func HasTemplateFile(path string) (bool, error) {
 func GeneratePostHTML(path string) (Post, error) {
 	p := Post{}
 
-	rawMDBuffer, err := ioutil.ReadFile(path + "/README.template.md")
+	rawMDBuffer, err := os.ReadFile(path + "/README.template.md")
 	if err != nil {
 		return Post{}, err
 	}
@@ -204,7 +204,7 @@ func GeneratePostHTML(path string) (Post, error) {
 	}
 
 	// Generate README.md from each template
-	err = ioutil.WriteFile(path+"/README.md", rawMDBuffer, os.ModePerm)
+	err = os.WriteFile(path+"/README.md", rawMDBuffer, os.ModePerm)
 	if err != nil {
 		return Post{}, err
 	}
@@ -227,7 +227,7 @@ func StitchTemplates(content []byte, path string, wrapIn string) ([]byte, error)
 		filename = bytes.Trim(filename, "<<")
 		filename = bytes.Trim(filename, ">>")
 
-		file, err := ioutil.ReadFile(path + "/" + string(filename))
+		file, err := os.ReadFile(path + "/" + string(filename))
 		if err != nil {
 			return nil, err
 		}
@@ -250,6 +250,7 @@ func LevelToDots(level int) string {
 }
 
 func CleanName(s string) string {
+	s = strings.ReplaceAll(s, "_", " ")
 	nameParts := strings.Split(s, ".")
 	if len(nameParts) > 1 {
 		return nameParts[1]
