@@ -42,4 +42,4 @@ Transactions are very useful when you need to do many database operations (for e
 
 ## Null Values
 Best is to avoid nullable columns in our table if possible. But if we do have nullable columns
-we should use special null types from database/sql or define our own.
+we should use special null types from database/sql or simply use pointers. 
