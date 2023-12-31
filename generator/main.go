@@ -144,7 +144,7 @@ func Walk(root string, str *strings.Builder, parentName string, level int, posts
 				post.Level = level
 				post.Name = "docs" + fileName
 				*posts = append(*posts, post)
-				str.WriteString(fmt.Sprintf(`<a href="{{.Level}}%s">%s</a>`, strings.TrimLeft(fileName, "/"), cleanN))
+				str.WriteString(fmt.Sprintf(`<a href="{{.Level}}%s">%s</a>`, strings.TrimLeft(fileName, "/"), strings.ReplaceAll(cleanN, "_", " ")))
 			} else {
 				str.WriteString(cleanN)
 			}
@@ -250,7 +250,6 @@ func LevelToDots(level int) string {
 }
 
 func CleanName(s string) string {
-	s = strings.ReplaceAll(s, "_", " ")
 	nameParts := strings.Split(s, ".")
 	if len(nameParts) > 1 {
 		return nameParts[1]
