@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link href="https://fonts.googleapis.com/css?family=Roboto|Source+Code+Pro" rel="stylesheet">
+	<link href="../style.css?ver=5" rel="stylesheet">
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<title>JSON - Go notes</title>
+</head>
+
+<body>
+	<div class="container" x-data="{ open: window.innerWidth < 950 ? false: true }">
+		<div class="burger"><span class="icon" @click="open = open==false? true: false">|||</span></div>
+		<div class="topMenu" x-show="open">
+			<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li></ul></li></ul>
+		</div>
+		<div class="left">
+			<div class="menu">
+				<div class="title"><a href="../">Go Notes</a></div>
+				<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li></ul></li></ul>
+			</div>
+		</div>
+		<div class="content">
+			<h1>JSON</h1>
+
+<h2>Encoding</h2>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;encoding/json&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;time&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Person</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">id</span>         <span class="kt">int</span>               <span class="c1">// unexported fields are not encoded
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">IsRobot</span>    <span class="kt">bool</span>              <span class="c1">// if no tag is specified, the field name is used
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Name</span>       <span class="kt">string</span>            <span class="s">`</span><span class="s">json:&#34;name&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Age</span>        <span class="kt">int</span>               <span class="s">`</span><span class="s">json:&#34;age&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Weight</span>     <span class="kt">float64</span>           <span class="s">`</span><span class="s">json:&#34;weight&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Nicknames</span>  <span class="p">[</span><span class="p">]</span><span class="kt">string</span>          <span class="s">`</span><span class="s">json:&#34;nicknames&#34;</span><span class="s">`</span> <span class="c1">// slices are encoded as JSON arrays
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Jobs</span>       <span class="p">[</span><span class="p">]</span><span class="nx">Job</span>             <span class="s">`</span><span class="s">json:&#34;jobs&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Attributes</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span> <span class="s">`</span><span class="s">json:&#34;attributes&#34;</span><span class="s">`</span> <span class="c1">// maps are encoded as JSON objects
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Job</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Company</span>  <span class="kt">string</span>     <span class="s">`</span><span class="s">json:&#34;company&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Position</span> <span class="kt">string</span>     <span class="s">`</span><span class="s">json:&#34;position&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">Started</span>  <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span>  <span class="s">`</span><span class="s">json:&#34;started&#34;</span><span class="s">`</span>            <span class="c1">// encode as RFC3339
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Ended</span>    <span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Time</span> <span class="s">`</span><span class="s">json:&#34;ended&#34;</span><span class="s">`</span>              <span class="c1">// encode as null if nil
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Comments</span> <span class="kt">string</span>     <span class="s">`</span><span class="s">json:&#34;comments,omitempty&#34;</span><span class="s">`</span> <span class="c1">// omit if empty
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">SimpleEncode</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">jobChangeDate</span> <span class="o">:=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Date</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">UTC</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">p</span> <span class="o">:=</span> <span class="nx">Person</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Name</span><span class="p">:</span>   <span class="s">&#34;John Doe&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Age</span><span class="p">:</span>    <span class="mi">42</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Weight</span><span class="p">:</span> <span class="mf">75.5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Nicknames</span><span class="p">:</span> <span class="p">[</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="s">&#34;Johnny&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="s">&#34;J&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Jobs</span><span class="p">:</span> <span class="p">[</span><span class="p">]</span><span class="nx">Job</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Company</span><span class="p">:</span>  <span class="s">&#34;ACME&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Position</span><span class="p">:</span> <span class="s">&#34;CEO&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Started</span><span class="p">:</span>  <span class="nx">jobChangeDate</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Company</span><span class="p">:</span>  <span class="s">&#34;ACME&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Position</span><span class="p">:</span> <span class="s">&#34;CTO&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Started</span><span class="p">:</span>  <span class="nx">time</span><span class="p">.</span><span class="nf">Date</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">time</span><span class="p">.</span><span class="nx">UTC</span><span class="p">)</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Ended</span><span class="p">:</span>    <span class="o">&amp;</span><span class="nx">jobChangeDate</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="nx">Comments</span><span class="p">:</span> <span class="s">&#34;I was promoted&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Attributes</span><span class="p">:</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="s">&#34;hair&#34;</span><span class="p">:</span> <span class="s">&#34;brown&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="s">&#34;eyes&#34;</span><span class="p">:</span> <span class="s">&#34;blue&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">j</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// to pretty print:
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// j, err := json.MarshalIndent(p, &#34;&#34;, &#34; &#34;)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">j</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Output:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&#34;IsRobot&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;John Doe&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&#34;weight&#34;</span><span class="p">:</span> <span class="mf">75.5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&#34;nicknames&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;Johnny&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;J&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="p">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&#34;jobs&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;company&#34;</span><span class="p">:</span> <span class="s2">&#34;ACME&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;position&#34;</span><span class="p">:</span> <span class="s2">&#34;CEO&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;started&#34;</span><span class="p">:</span> <span class="s2">&#34;2015-01-01T00:00:00Z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;ended&#34;</span><span class="p">:</span> <span class="kc">null</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;company&#34;</span><span class="p">:</span> <span class="s2">&#34;ACME&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;position&#34;</span><span class="p">:</span> <span class="s2">&#34;CTO&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;started&#34;</span><span class="p">:</span> <span class="s2">&#34;2011-01-01T00:00:00Z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;ended&#34;</span><span class="p">:</span> <span class="s2">&#34;2015-01-01T00:00:00Z&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;comments&#34;</span><span class="p">:</span> <span class="s2">&#34;I was promoted&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"> <span class="p">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;eyes&#34;</span><span class="p">:</span> <span class="s2">&#34;blue&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;hair&#34;</span><span class="p">:</span> <span class="s2">&#34;brown&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<h3>OmitEmpty</h3>
+
+<p>The omitempty option in Go&rsquo;s JSON encoding works by omitting the field from the JSON output if the field has an empty value. An &ldquo;empty&rdquo; value means the zero value for the field&rsquo;s type, which includes:</p>
+
+<ul>
+<li>false for booleans,
+-0 for numeric types,</li>
+<li>&rdquo;&rdquo; (the empty string) for strings,</li>
+<li>nil for pointers, interfaces, maps, slices, and channels,</li>
+<li>the zero value for arrays, structs, and any other types.</li>
+</ul>
+
+<p>However, it&rsquo;s important to note that for structs, omitempty will not omit the field if the struct is empty but not nil. This is because an empty struct still has a valid, non-nil zero value. If you want to omit a struct, the best solution would be to add it as a pointer in the struct.</p>
+
+<h2>Decoding</h2>
+
+<p>As long as we know how the JSON data is structured, we can decode it into a struct. And we can use the parts of the data we need.</p>
+
+<p>The struct must have exported fields, otherwise the decoder will not be able to set them.</p>
+
+<p>The struct can have more fields than the JSON data, but the decoder will only set the fields that are present in the JSON data.</p>
+
+<p>The struct must tag the fields with the name of the JSON field, otherwise the decoder will not be able to set them.</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;encoding/json&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">data</span> <span class="p">=</span> <span class="s">`</span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;coord&#34;: </span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;lon&#34;: 10.99,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;lat&#34;: 44.34
+</span></span></span><span class="line"><span class="cl"><span class="s">		},
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;weather&#34;: [
+</span></span></span><span class="line"><span class="cl"><span class="s">			</span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">				&#34;id&#34;: 501,
+</span></span></span><span class="line"><span class="cl"><span class="s">				&#34;main&#34;: &#34;Rain&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">				&#34;description&#34;: &#34;moderate rain&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">				&#34;icon&#34;: &#34;10d&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">			}
+</span></span></span><span class="line"><span class="cl"><span class="s">		],
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;base&#34;: &#34;stations&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;main&#34;: </span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;temp&#34;: 298.48,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;feels_like&#34;: 298.74,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;temp_min&#34;: 297.56,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;temp_max&#34;: 300.05,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;pressure&#34;: 1015,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;humidity&#34;: 64,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;sea_level&#34;: 1015,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;grnd_level&#34;: 933
+</span></span></span><span class="line"><span class="cl"><span class="s">		},
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;visibility&#34;: 10000,
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;wind&#34;: </span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;speed&#34;: 0.62,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;deg&#34;: 349,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;gust&#34;: 1.18
+</span></span></span><span class="line"><span class="cl"><span class="s">		},
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;rain&#34;: </span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;1h&#34;: 3.16
+</span></span></span><span class="line"><span class="cl"><span class="s">		},
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;clouds&#34;: </span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;all&#34;: 100
+</span></span></span><span class="line"><span class="cl"><span class="s">		},
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;dt&#34;: 1661870592,
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;sys&#34;: </span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;type&#34;: 2,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;id&#34;: 2075663,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;country&#34;: &#34;IT&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;sunrise&#34;: 1661834187,
+</span></span></span><span class="line"><span class="cl"><span class="s">			&#34;sunset&#34;: 1661882248
+</span></span></span><span class="line"><span class="cl"><span class="s">		},
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;timezone&#34;: 7200,
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;id&#34;: 3163858,
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;name&#34;: &#34;Zocca&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;cod&#34;: 200
+</span></span></span><span class="line"><span class="cl"><span class="s">	}</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">SimpleDecoding</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">type</span> <span class="nx">WeatherData</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Coord</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Lon</span> <span class="kt">float64</span> <span class="s">`</span><span class="s">json:&#34;lon&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Lat</span> <span class="kt">float64</span> <span class="s">`</span><span class="s">json:&#34;lat&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="s">`</span><span class="s">json:&#34;coord&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Weather</span> <span class="p">[</span><span class="p">]</span><span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">ID</span>          <span class="kt">int</span>    <span class="s">`</span><span class="s">json:&#34;id&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Main</span>        <span class="kt">string</span> <span class="s">`</span><span class="s">json:&#34;main&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Description</span> <span class="kt">string</span> <span class="s">`</span><span class="s">json:&#34;description&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">Icon</span>        <span class="kt">string</span> <span class="s">`</span><span class="s">json:&#34;icon&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span> <span class="s">`</span><span class="s">json:&#34;weather&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">wd</span> <span class="nx">WeatherData</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">wd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%+v\n&#34;</span><span class="p">,</span> <span class="nx">wd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Output:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="o">{</span>Coord:<span class="o">{</span>Lon:10.99 Lat:44.34<span class="o">}</span> Weather:<span class="o">[</span><span class="o">{</span>ID:501 Main:Rain Description:moderate rain Icon:10d<span class="o">}</span><span class="o">]</span><span class="o">}</span>
+</span></span></code></pre>
+<h2>MarshalJSON interface</h2>
+
+<h2>UnmarshalJSON interface</h2>
+
+		</div>
+		<div class="right">
+			<div class="infobox">
+    <img src="https://avatars1.githubusercontent.com/u/196192?v=4">
+    <div class="author">Hamid Abouei</div>
+    <div class="title">Developer</div>
+
+    <div class="block">
+        <label>Created at</label>
+        <div class="date">2023-12-31</div>
+    </div>
+
+    <div class="block">
+        <label>Updated at</label>
+        <div class="date">2023-12-31</div>
+    </div>
+
+    <div class="block">
+        <label>Connect</label>
+        <div class="socialmedia"><a href="www.twitter.com/hamochis">@github</a></div>
+        <div class="socialmedia"><a href="www.linkedin.com/hamidabouei">@linkedIn</a></div>
+    </div>
+
+    <div class="block">
+        <label>Feedback</label>
+        <div class="socialmedia"><a href="mailto:hamochi@gmail.com">@email</a></div>
+    </div>
+</div>
+		</div>
+	</div>
+</body>
+
+</html>
