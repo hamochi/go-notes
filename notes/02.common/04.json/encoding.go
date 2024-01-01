@@ -15,6 +15,7 @@ type Person struct {
 	Nicknames  []string          `json:"nicknames"` // slices are encoded as JSON arrays
 	Jobs       []Job             `json:"jobs"`
 	Attributes map[string]string `json:"attributes"` // maps are encoded as JSON objects
+	Password   string            `json:"-"`          // this field is never encoded
 }
 
 type Job struct {
@@ -55,6 +56,7 @@ func SimpleEncode() {
 			"hair": "brown",
 			"eyes": "blue",
 		},
+		Password: "secret",
 	}
 
 	j, err := json.Marshal(p)

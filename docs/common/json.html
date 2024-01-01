@@ -43,6 +43,7 @@
 </span></span><span class="line"><span class="cl">	<span class="nx">Nicknames</span>  <span class="p">[</span><span class="p">]</span><span class="kt">string</span>          <span class="s">`</span><span class="s">json:&#34;nicknames&#34;</span><span class="s">`</span> <span class="c1">// slices are encoded as JSON arrays
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Jobs</span>       <span class="p">[</span><span class="p">]</span><span class="nx">Job</span>             <span class="s">`</span><span class="s">json:&#34;jobs&#34;</span><span class="s">`</span>
 </span></span><span class="line"><span class="cl">	<span class="nx">Attributes</span> <span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">string</span> <span class="s">`</span><span class="s">json:&#34;attributes&#34;</span><span class="s">`</span> <span class="c1">// maps are encoded as JSON objects
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">Password</span>   <span class="kt">string</span>            <span class="s">`</span><span class="s">json:&#34;-&#34;</span><span class="s">`</span>          <span class="c1">// this field is never encoded
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Job</span> <span class="kd">struct</span> <span class="p">{</span>
@@ -83,6 +84,7 @@
 </span></span><span class="line"><span class="cl">			<span class="s">&#34;hair&#34;</span><span class="p">:</span> <span class="s">&#34;brown&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">			<span class="s">&#34;eyes&#34;</span><span class="p">:</span> <span class="s">&#34;blue&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">		<span class="p">}</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Password</span><span class="p">:</span> <span class="s">&#34;secret&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">	<span class="nx">j</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
@@ -234,10 +236,147 @@
 <p>Output:</p>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="o">{</span>Coord:<span class="o">{</span>Lon:10.99 Lat:44.34<span class="o">}</span> Weather:<span class="o">[</span><span class="o">{</span>ID:501 Main:Rain Description:moderate rain Icon:10d<span class="o">}</span><span class="o">]</span><span class="o">}</span>
 </span></span></code></pre>
-<h2>MarshalJSON interface</h2>
+<h2>Marshaler interface</h2>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Marshaler</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">MarshalJSON</span><span class="p">(</span><span class="p">)</span> <span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Everytime we use the json.Marshal() function, the Go runtime will check if the type of the object we are trying to marshal implements the Marshaler interface. If it does, then the MarshalJSON() method will be called to marshal the object. If it doesn&rsquo;t, then the default marshaling will be used.</p>
 
-<h2>UnmarshalJSON interface</h2>
+<p>This is useful when we want to customize the way an object is marshaled. For example, we can use it to change the name of a field in the JSON output, or to omit a field from the JSON output, or marshal unexported fields.</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;encoding/json&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Human</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">firstname</span> <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">lastname</span>  <span class="kt">string</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">age</span>       <span class="kt">int</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Human</span><span class="p">)</span> <span class="nf">FirstName</span><span class="p">(</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">firstname</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Human</span><span class="p">)</span> <span class="nf">LastName</span><span class="p">(</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">lastname</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Human</span><span class="p">)</span> <span class="nf">Age</span><span class="p">(</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">age</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">p</span> <span class="nx">Human</span><span class="p">)</span> <span class="nf">MarshalJSON</span><span class="p">(</span><span class="p">)</span> <span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// We could return a JSON string here, but it&#39;s not a good idea.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// return []byte(fmt.Sprintf(`{&#34;fullname&#34;: &#34;%s %s&#34;, &#34;age_in_dog_years&#34;: %d}`, p.firstname, p.lastname, p.age*7)), nil
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// Instead we create a temporary struct and marshal that.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kd">type</span> <span class="nx">TempHuman</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Name</span>          <span class="kt">string</span> <span class="s">`</span><span class="s">json:&#34;name&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">AgeInDogYears</span> <span class="kt">int</span>    <span class="s">`</span><span class="s">json:&#34;age_in_dog_years&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">temp</span> <span class="o">:=</span> <span class="nx">TempHuman</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">Name</span><span class="p">:</span>          <span class="nx">p</span><span class="p">.</span><span class="nf">FirstName</span><span class="p">(</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#34; &#34;</span> <span class="o">+</span> <span class="nx">p</span><span class="p">.</span><span class="nf">LastName</span><span class="p">(</span><span class="p">)</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">AgeInDogYears</span><span class="p">:</span> <span class="nx">p</span><span class="p">.</span><span class="nf">Age</span><span class="p">(</span><span class="p">)</span> <span class="o">*</span> <span class="mi">7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">temp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewHuman</span><span class="p">(</span><span class="nx">firstname</span><span class="p">,</span> <span class="nx">lastname</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">age</span> <span class="kt">int</span><span class="p">)</span> <span class="nx">Human</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">Human</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">firstname</span><span class="p">:</span> <span class="nx">firstname</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">lastname</span><span class="p">:</span>  <span class="nx">lastname</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">age</span><span class="p">:</span>       <span class="nx">age</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">MarshalerExample</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">p</span> <span class="o">:=</span> <span class="nf">NewHuman</span><span class="p">(</span><span class="s">&#34;John&#34;</span><span class="p">,</span> <span class="s">&#34;Doe&#34;</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">data</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Marshal</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Println</span><span class="p">(</span><span class="nb">string</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Output:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;John Doe&#34;</span><span class="p">,</span><span class="nt">&#34;age_in_dog_years&#34;</span><span class="p">:</span><span class="mi">294</span><span class="p">}</span>
+</span></span></code></pre>
+<h2>Unmarshaler interface</h2>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Unmarshaler</span> <span class="kd">interface</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nf">UnmarshalJSON</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Everytime we use the json.Unmarshal() function, the Go runtime will check if the type of the object we are trying to unmarshal implements the Unmarshaler interface. If it does, then the UnmarshalJSON() method will be called to unmarshal the object. If it doesn&rsquo;t, then the default unmarshaling will be used.</p>
 
+<p>This is useful when we want to customize the way an object is unmarshaled. For example, we can use it to change the time format of a field, or to unmarshal a field into a different type.</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;encoding/json&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;strconv&#34;</span>
+</span></span><span class="line"><span class="cl">	<span class="s">&#34;time&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">j</span> <span class="p">=</span> <span class="s">`</span><span class="s">{</span><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;id&#34;: &#34;1&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">		&#34;created_at&#34;: 1704112360
+</span></span></span><span class="line"><span class="cl"><span class="s">	}</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Data</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">ID</span>        <span class="kt">int</span>       <span class="s">`</span><span class="s">json:&#34;id&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">CreatedAt</span> <span class="nx">time</span><span class="p">.</span><span class="nx">Time</span> <span class="s">`</span><span class="s">json:&#34;created_at&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <span class="o">*</span><span class="nx">Data</span><span class="p">)</span> <span class="nf">UnmarshalJSON</span><span class="p">(</span><span class="nx">b</span> <span class="p">[</span><span class="p">]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">type</span> <span class="nx">Temp</span> <span class="kd">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">ID</span>        <span class="kt">string</span> <span class="s">`</span><span class="s">json:&#34;id&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">CreatedAt</span> <span class="kt">int</span>    <span class="s">`</span><span class="s">json:&#34;created_at&#34;</span><span class="s">`</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">temp</span> <span class="nx">Temp</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">temp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// convert temp.ID to int and assign it to d.ID
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">id</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">strconv</span><span class="p">.</span><span class="nf">Atoi</span><span class="p">(</span><span class="nx">temp</span><span class="p">.</span><span class="nx">ID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">d</span><span class="p">.</span><span class="nx">ID</span> <span class="p">=</span> <span class="nx">id</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// convert temp.CreatedAt to time.Time and assign it to d.CreatedAt
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nx">d</span><span class="p">.</span><span class="nx">CreatedAt</span> <span class="p">=</span> <span class="nx">time</span><span class="p">.</span><span class="nf">Unix</span><span class="p">(</span><span class="nb">int64</span><span class="p">(</span><span class="nx">temp</span><span class="p">.</span><span class="nx">CreatedAt</span><span class="p">)</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">UnamarshalerExample</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// The json data id is a string and created_at is an int (unix timestamp)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// but we want to unmarshal them into a struct with an int and a time.Time
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">d</span> <span class="nx">Data</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">err</span> <span class="o">:=</span> <span class="nx">json</span><span class="p">.</span><span class="nf">Unmarshal</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="nb">byte</span><span class="p">(</span><span class="nx">j</span><span class="p">)</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nx">fmt</span><span class="p">.</span><span class="nf">Printf</span><span class="p">(</span><span class="s">&#34;%+v\n&#34;</span><span class="p">,</span> <span class="nx">d</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre>
+<p>Output:</p>
+<pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="p">{</span><span class="err">I</span><span class="err">D</span><span class="err">:</span><span class="err">1</span> <span class="err">C</span><span class="err">r</span><span class="err">e</span><span class="err">a</span><span class="err">t</span><span class="err">e</span><span class="err">d</span><span class="err">A</span><span class="err">t</span><span class="err">:</span><span class="err">2</span><span class="err">0</span><span class="err">2</span><span class="err">4</span><span class="err">-</span><span class="err">0</span><span class="err">1</span><span class="err">-</span><span class="err">0</span><span class="err">1</span> <span class="err">1</span><span class="err">3</span><span class="err">:</span><span class="err">3</span><span class="err">2</span><span class="err">:</span><span class="err">4</span><span class="err">0</span> <span class="err">+</span><span class="err">0</span><span class="err">1</span><span class="err">0</span><span class="err">0</span> <span class="err">C</span><span class="err">E</span><span class="err">T</span><span class="p">}</span>
+</span></span></code></pre>
 		</div>
 		<div class="right">
 			<div class="infobox">

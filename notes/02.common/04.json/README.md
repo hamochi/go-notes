@@ -20,6 +20,7 @@ type Person struct {
 	Nicknames  []string          `json:"nicknames"` // slices are encoded as JSON arrays
 	Jobs       []Job             `json:"jobs"`
 	Attributes map[string]string `json:"attributes"` // maps are encoded as JSON objects
+	Password   string            `json:"-"`          // this field is never encoded
 }
 
 type Job struct {
@@ -60,6 +61,7 @@ func SimpleEncode() {
 			"hair": "brown",
 			"eyes": "blue",
 		},
+		Password: "secret",
 	}
 
 	j, err := json.Marshal(p)
@@ -212,7 +214,155 @@ Output:
 {Coord:{Lon:10.99 Lat:44.34} Weather:[{ID:501 Main:Rain Description:moderate rain Icon:10d}]}
 ```
 
+## Marshaler interface
+```go
+type Marshaler interface {
+	MarshalJSON() ([]byte, error)
+}
+```
+Everytime we use the json.Marshal() function, the Go runtime will check if the type of the object we are trying to marshal implements the Marshaler interface. If it does, then the MarshalJSON() method will be called to marshal the object. If it doesn't, then the default marshaling will be used.
 
+This is useful when we want to customize the way an object is marshaled. For example, we can use it to change the name of a field in the JSON output, or to omit a field from the JSON output, or marshal unexported fields.
 
-## MarshalJSON interface
-## UnmarshalJSON interface
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Human struct {
+	firstname string
+	lastname  string
+	age       int
+}
+
+func (p Human) FirstName() string {
+	return p.firstname
+}
+
+func (p Human) LastName() string {
+	return p.lastname
+}
+
+func (p Human) Age() int {
+	return p.age
+}
+
+func (p Human) MarshalJSON() ([]byte, error) {
+	// We could return a JSON string here, but it's not a good idea.
+	// return []byte(fmt.Sprintf(`{"fullname": "%s %s", "age_in_dog_years": %d}`, p.firstname, p.lastname, p.age*7)), nil
+
+	// Instead we create a temporary struct and marshal that.
+	type TempHuman struct {
+		Name          string `json:"name"`
+		AgeInDogYears int    `json:"age_in_dog_years"`
+	}
+
+	temp := TempHuman{
+		Name:          p.FirstName() + " " + p.LastName(),
+		AgeInDogYears: p.Age() * 7,
+	}
+
+	return json.Marshal(temp)
+}
+
+func NewHuman(firstname, lastname string, age int) Human {
+	return Human{
+		firstname: firstname,
+		lastname:  lastname,
+		age:       age,
+	}
+}
+
+func MarshalerExample() {
+	p := NewHuman("John", "Doe", 42)
+
+	data, err := json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(string(data))
+}
+```
+
+Output:
+```JSON
+{"name":"John Doe","age_in_dog_years":294}
+```
+
+## Unmarshaler interface
+```go
+type Unmarshaler interface {
+	UnmarshalJSON([]byte) error
+}
+```
+Everytime we use the json.Unmarshal() function, the Go runtime will check if the type of the object we are trying to unmarshal implements the Unmarshaler interface. If it does, then the UnmarshalJSON() method will be called to unmarshal the object. If it doesn't, then the default unmarshaling will be used.
+
+This is useful when we want to customize the way an object is unmarshaled. For example, we can use it to change the time format of a field, or to unmarshal a field into a different type.
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"time"
+)
+
+var j = `{
+		"id": "1",
+		"created_at": 1704112360
+	}`
+
+type Data struct {
+	ID        int       `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func (d *Data) UnmarshalJSON(b []byte) error {
+	type Temp struct {
+		ID        string `json:"id"`
+		CreatedAt int    `json:"created_at"`
+	}
+
+	var temp Temp
+	err := json.Unmarshal(b, &temp)
+	if err != nil {
+		return err
+	}
+
+	// convert temp.ID to int and assign it to d.ID
+	id, err := strconv.Atoi(temp.ID)
+	if err != nil {
+		return err
+	}
+	d.ID = id
+
+	// convert temp.CreatedAt to time.Time and assign it to d.CreatedAt
+	d.CreatedAt = time.Unix(int64(temp.CreatedAt), 0)
+
+	return nil
+}
+
+func UnamarshalerExample() {
+	// The json data id is a string and created_at is an int (unix timestamp)
+	// but we want to unmarshal them into a struct with an int and a time.Time
+
+	var d Data
+	err := json.Unmarshal([]byte(j), &d)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", d)
+}
+```
+
+Output:
+```JSON
+{ID:1 CreatedAt:2024-01-01 13:32:40 +0100 CET}
+```

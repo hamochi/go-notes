@@ -4,5 +4,7 @@ import "testing"
 
 func Test(t *testing.T) {
 	//SimpleEncode()
-	SimpleDecoding()
+	// SimpleDecoding()
+	// MarshalerExample()
+	UnamarshalerExample()
 }

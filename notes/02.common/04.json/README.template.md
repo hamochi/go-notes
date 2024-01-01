@@ -66,5 +66,36 @@ Output:
 {Coord:{Lon:10.99 Lat:44.34} Weather:[{ID:501 Main:Rain Description:moderate rain Icon:10d}]}
 ```
 
-## MarshalJSON interface
-## UnmarshalJSON interface
+## Marshaler interface
+```go
+type Marshaler interface {
+	MarshalJSON() ([]byte, error)
+}
+```
+Everytime we use the json.Marshal() function, the Go runtime will check if the type of the object we are trying to marshal implements the Marshaler interface. If it does, then the MarshalJSON() method will be called to marshal the object. If it doesn't, then the default marshaling will be used.
+
+This is useful when we want to customize the way an object is marshaled. For example, we can use it to change the name of a field in the JSON output, or to omit a field from the JSON output, or marshal unexported fields.
+
+<<marshaler.go>>
+
+Output:
+```JSON
+{"name":"John Doe","age_in_dog_years":294}
+```
+
+## Unmarshaler interface
+```go
+type Unmarshaler interface {
+	UnmarshalJSON([]byte) error
+}
+```
+Everytime we use the json.Unmarshal() function, the Go runtime will check if the type of the object we are trying to unmarshal implements the Unmarshaler interface. If it does, then the UnmarshalJSON() method will be called to unmarshal the object. If it doesn't, then the default unmarshaling will be used.
+
+This is useful when we want to customize the way an object is unmarshaled. For example, we can use it to change the time format of a field, or to unmarshal a field into a different type.
+
+<<unmarshaler.go>>
+
+Output:
+```JSON
+{ID:1 CreatedAt:2024-01-01 13:32:40 +0100 CET}
+```
