@@ -7,6 +7,20 @@
 # IO streaming
 In Go we can model data as streams. We can stream data from sources with io.Reader and save data to destinations with io.Writer. Sources can be  files, network connections, std out, strings etc.
 
+1. [Reader](#reader)
+  1. [Reading from a reader](#reading-from-a-reader)
+  2. [Reading all at once](#reading-all-at-once)
+  3. [Creating a custom reader](#creating-a-custom-reader)
+2. [Writer](#writer)
+  1. [Writing to a Writer](#writing-to-a-writer)
+  2. [Writing a string to a writer](#writing-a-string-to-a-writer)
+  3. [Writing with fmt](#writing-with-fmt)
+3. [Chaining from Reader to Writer](#chaining-from-reader-to-writer)
+  1. [Using ReadFrom](#using-readfrom)
+  2. [Using WriteTo](#using-writeto)
+  3. [Using io.Copy](#using-iocopy)
+
+
 ## Reader
 A reader reads data from the source, loads it in a buffer and returns how many bytes it has written to the buffer. This is usually done in a loop until the reader returns an EOT error.
 
@@ -19,7 +33,7 @@ type Reader interface {
 }
 ```
 
-### Read() - Reading from a Reader
+### Reading from a Reader
 In order to read from a Reader we just call the Read() method in a loop and load chunks of data in a byte array until we get an EOT error. Let's look at a simple example where we convert a string to a Reader.
 
 ```bash 
@@ -52,7 +66,7 @@ gdo 1
 
 ```
 
-### ReadAll() - Reading all at once
+### Reading all at once
 If we want to all the data at once, without looping we can use the the ReadAll function from the io package.
 
 ```go

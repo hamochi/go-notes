@@ -5,6 +5,18 @@
 }
 ---
 # MySQL
+1. [Connection](#connection)
+2. [Select many rows](#select-many-rows)
+3. [Select single row](#select-single-row)
+4. [Insert](#insert)
+5. [Update](#update)
+6. [Delete](#delete)
+7. [Prepare](#prepare)
+8. [Transactions](#transactions)
+9. [Null Values](#null-values)
+
+
+
 - Use Query() for SELECT statements, and always handle the returned rows and iterate over them.
 - Use Exec() for INSERT, DELETE, UPDATE and other statements that does not return rows.
 - Query(query) does not prepare statements, but Query(queryTemplate, params) do.

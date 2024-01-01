@@ -16,8 +16,8 @@
 - Error handling
 - Http client
 - JSON
-- File - read, write, embeddings
 - Mysql
+- File - read, write, embeddings
 
 ### Gin
 - Routes

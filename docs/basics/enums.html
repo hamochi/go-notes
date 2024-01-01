@@ -14,12 +14,12 @@
 	<div class="container" x-data="{ open: window.innerWidth < 950 ? false: true }">
 		<div class="burger"><span class="icon" @click="open = open==false? true: false">|||</span></div>
 		<div class="topMenu" x-show="open">
-			<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li></ul></li></ul>
+			<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li><li><a href="../common/file.html">file</a></li></ul></li></ul>
 		</div>
 		<div class="left">
 			<div class="menu">
 				<div class="title"><a href="../">Go Notes</a></div>
-				<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li></ul></li></ul>
+				<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li><li><a href="../common/file.html">file</a></li></ul></li></ul>
 			</div>
 		</div>
 		<div class="content">
@@ -103,7 +103,7 @@ can print out the textual values of the enum.</p>
 <p>Output:</p>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl">december
 </span></span></code></pre>
-<h2>Using variables and structs</h2>
+<h2 id="using-variables-and-structs">Using variables and structs</h2>
 
 <p>In this examples we create a type called Color that is a Struct and another type called NamedColor based on Color.
 We then create our enumns based on NamedColor.</p>

@@ -1,5 +1,11 @@
 
 # JSON
+1. [Encoding](#encoding)
+  1. [OmitEmpty](#omitempty)
+2. [Decoding](#decoding)
+3. [Marshaler interface](#marshaler-interface)
+4. [Unmarshaler interface](#unmarshaler-interface)
+
 
 ## Encoding
 ```go

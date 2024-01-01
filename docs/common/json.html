@@ -14,18 +14,29 @@
 	<div class="container" x-data="{ open: window.innerWidth < 950 ? false: true }">
 		<div class="burger"><span class="icon" @click="open = open==false? true: false">|||</span></div>
 		<div class="topMenu" x-show="open">
-			<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li></ul></li></ul>
+			<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li><li><a href="../common/file.html">file</a></li></ul></li></ul>
 		</div>
 		<div class="left">
 			<div class="menu">
 				<div class="title"><a href="../">Go Notes</a></div>
-				<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li></ul></li></ul>
+				<ul><li>basics<ul><li><a href="../basics/enums.html">enums</a></li><li><a href="../basics/streaming.html">streaming</a></li></ul></li><li>common<ul><li><a href="../common/custom_error.html">custom error</a></li><li><a href="../common/http_client.html">http client</a></li><li><a href="../common/mysql.html">mysql</a></li><li><a href="../common/json.html">json</a></li><li><a href="../common/file.html">file</a></li></ul></li></ul>
 			</div>
 		</div>
 		<div class="content">
 			<h1>JSON</h1>
 
-<h2>Encoding</h2>
+<ol>
+<li><a href="#encoding">Encoding</a>
+
+<ol>
+<li><a href="#omitempty">OmitEmpty</a></li>
+</ol></li>
+<li><a href="#decoding">Decoding</a></li>
+<li><a href="#marshaler-interface">Marshaler interface</a></li>
+<li><a href="#unmarshaler-interface">Unmarshaler interface</a></li>
+</ol>
+
+<h2 id="encoding">Encoding</h2>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
@@ -129,7 +140,7 @@
 </span></span><span class="line"><span class="cl"> <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre>
-<h3>OmitEmpty</h3>
+<h3 id="omitempty">OmitEmpty</h3>
 
 <p>The omitempty option in Go&rsquo;s JSON encoding works by omitting the field from the JSON output if the field has an empty value. An &ldquo;empty&rdquo; value means the zero value for the field&rsquo;s type, which includes:</p>
 
@@ -143,7 +154,7 @@
 
 <p>However, it&rsquo;s important to note that for structs, omitempty will not omit the field if the struct is empty but not nil. This is because an empty struct still has a valid, non-nil zero value. If you want to omit a struct, the best solution would be to add it as a pointer in the struct.</p>
 
-<h2>Decoding</h2>
+<h2 id="decoding">Decoding</h2>
 
 <p>As long as we know how the JSON data is structured, we can decode it into a struct. And we can use the parts of the data we need.</p>
 
@@ -236,7 +247,7 @@
 <p>Output:</p>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="o">{</span>Coord:<span class="o">{</span>Lon:10.99 Lat:44.34<span class="o">}</span> Weather:<span class="o">[</span><span class="o">{</span>ID:501 Main:Rain Description:moderate rain Icon:10d<span class="o">}</span><span class="o">]</span><span class="o">}</span>
 </span></span></code></pre>
-<h2>Marshaler interface</h2>
+<h2 id="marshaler-interface">Marshaler interface</h2>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Marshaler</span> <span class="kd">interface</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">MarshalJSON</span><span class="p">(</span><span class="p">)</span> <span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="kt">byte</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -309,7 +320,7 @@
 <p>Output:</p>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;John Doe&#34;</span><span class="p">,</span><span class="nt">&#34;age_in_dog_years&#34;</span><span class="p">:</span><span class="mi">294</span><span class="p">}</span>
 </span></span></code></pre>
-<h2>Unmarshaler interface</h2>
+<h2 id="unmarshaler-interface">Unmarshaler interface</h2>
 <pre tabindex="0" class="chroma"><code><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Unmarshaler</span> <span class="kd">interface</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="nf">UnmarshalJSON</span><span class="p">(</span><span class="p">[</span><span class="p">]</span><span class="kt">byte</span><span class="p">)</span> <span class="kt">error</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>

@@ -159,7 +159,7 @@ func Walk(root string, str *strings.Builder, parentName string, level int, posts
 }
 
 func HasTemplateFile(path string) (bool, error) {
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		return false, err
 	}
@@ -215,6 +215,7 @@ func GeneratePostHTML(path string) (Post, error) {
 	)
 
 	p.Content = string(blackfriday.Run(rawMDBuffer, blackfriday.WithRenderer(r)))
+	p.Content = addIDToHeaders(p.Content)
 
 	return p, nil
 }
@@ -255,4 +256,18 @@ func CleanName(s string) string {
 		return nameParts[1]
 	}
 	return nameParts[0]
+}
+
+func addIDToHeaders(input string) string {
+	re := regexp.MustCompile(`<(h2|h3|h4)>([^<]+)</(h2|h3|h4)>`)
+	return re.ReplaceAllStringFunc(input, func(m string) string {
+		matches := re.FindStringSubmatch(m)
+		if len(matches) < 4 {
+			return m
+		}
+
+		tag, text := matches[1], matches[2]
+		id := strings.ToLower(strings.ReplaceAll(text, " ", "-"))
+		return fmt.Sprintf(`<%s id="%s">%s</%s>`, tag, id, text, tag)
+	})
 }
