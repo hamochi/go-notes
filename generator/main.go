@@ -211,7 +211,7 @@ func GeneratePostHTML(path string) (Post, error) {
 
 	r := bfchroma.NewRenderer(
 		bfchroma.ChromaStyle(styles.Xcode),
-		bfchroma.ChromaOptions(html.WithClasses(true)),
+		bfchroma.ChromaOptions(html.WithClasses(true), html.TabWidth(1)),
 	)
 
 	p.Content = string(blackfriday.Run(rawMDBuffer, blackfriday.WithRenderer(r)))
